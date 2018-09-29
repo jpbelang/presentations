@@ -130,19 +130,18 @@ Plusieurs améliorations ont été ajoutées aux interfaces.
 # Petit exemple
 ```java
 @FunctionalInterface
-interface Navigator {
+public interface Navigator {
 
     static Navigator createDefault() {
 
-        return NavigatorImpl();
+        return new NavigatorImpl();
     }
 
-    default Location navigate(String...options) {
-
-        navigate(new HashSet<>(Arrays.asList(options)));
+    String navigate(String...options);
+    default String navigate(Set<String> options) {
+        
+        return navigate(options.toArray(new String[0]));
     }
-
-    Location navigate(Set<String> options);
 }
 ```
 ---
@@ -185,18 +184,23 @@ Avant, Java avait plusieurs interfaces très simples qui permettaient de faire d
 
 Malheureusement, leur utilisation était un peu trop verbose.
 ```java
-public void executeFrom(Executor executor) {
+public class NonFunctionalRunnable {
     
-    final int actionId;
-    
-    Runnable r = new Runnable () {
+    public void executeFrom(Executor executor) {
+
+        final int actionId = new Random().nextInt();
+
+        Runnable r = new Runnable () {
             public void run() {
-                switch( actionId )
-                /* ... */
+                switch (actionId) {
+                    /* ... */
+                }
             }
         };
-    executor.submit();
+        executor.execute(r);
+    }
 }
+
 ``` 
 
 ---
@@ -206,14 +210,19 @@ Les expressions lambda sont un nouvel élément syntaxique de Java 8: les foncti
 (les fonctions en tant qu'objets).  Cette idée ne s'applique qu'aux interfaces qui n'ont qu'une methode abstraite.  Dans
 sa plus simple expression, ça donne.
 ```java
-public void executeFrom(Executor executor) {
+public class LambdaRunnable {
     
-    int actionId;
-    Runnable r = () ->  {
-                     switch( actionId )
-                     /* ... */
-             };
-    executor.submit(r);
+    public void executeFrom(Executor executor) {
+
+        final int actionId = new Random().nextInt();
+
+        Runnable r = () -> {
+            switch (actionId) {
+                /* ... */
+            }
+        };
+        executor.execute(r);
+    }
 }
 ``` 
 
