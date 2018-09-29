@@ -234,7 +234,7 @@ Ce qui est a droite du `()->` deviendra l'implémentation de la méthode manquan
 @FunctionalInterface
 interface Navigator {
 
-    Location navigate(String... directions);
+    String navigate(String... directions);
 }
 
 public class Ship {
@@ -250,8 +250,8 @@ class Sea {
     public void doNavigation(Ship ship) {
         
         Navigator navigator = (directions) ->  {
-                         /* pick one  */
-                         return one;
+
+            return directions[0];
         };
         ship.navigateWith(navigator);
     }
@@ -266,16 +266,16 @@ Supposons l'existance d'une méthode, on pourrait platement lui déléguer l'app
 class Sea {
     public void doNavigation(Ship ship) {
         Navigator navigator = (directions) ->  {
-                         /* pick one  */
-                         return iWouldLikeToPickADirection(directions);
+
+            return iWouldLikeToPickADirection(directions);
         };
         // ou bien, pour simplifier...
-       navigator = (directions) ->  iWouldLikeToPickADirection(directions);
-       ship.navigateWith(navigator);
-    }    
+        navigator = (directions) ->  iWouldLikeToPickADirection(directions);
+        ship.navigateWith(navigator);
+    }
+
     public String iWouldLikeToPickADirection(String...directions) {
-         /* pick one  */
-         return one;        
+        return directions[0];
     }
 }
 @FunctionalInterface
@@ -290,22 +290,23 @@ public class Ship {
 }
 ```
 ---
-# Le réferences de méthode
+# Les réferences de méthode
 
 ```java
 class Sea {
-    public String doNavigation(Ship ship) {
+    public void doNavigation(Ship ship) {
         Navigator navigator = this::iWouldLikeToPickADirection;
-        return ship.navigateWith(navigator);
-    }    
+        ship.navigateWith(navigator);
+    }
+    
     public String iWouldLikeToPickADirection(String...directions) {
-         /* pick one  */
-         return one;        
+        /* pick one  */
+        return directions[0];
     }
 }
 @FunctionalInterface
 interface Navigator {
-    Location navigate(String... directions);
+    String navigate(String... directions);
 }
 public class Ship {    
     public void navigateWith(Navigator n) {
@@ -313,7 +314,6 @@ public class Ship {
         String result = n.navigate("east", "west", "north");        
     }
 }
-
 ```
 
 
