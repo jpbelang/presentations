@@ -312,7 +312,7 @@ public class Ship {
 }
 ```
 ---
-# On a maintenant plein d'interfaces fonctionnelles pré-définies en java
+# Pourquoi ré-inventer ?
 
 * `Predicate<T>`
 * `Supplier<T>`
@@ -324,7 +324,7 @@ Et leur variantes Bi....
 
 ---
 
-# Une application rapide des idées:  Optional
+# Mort aux nulls: Optional
 
 `Optional`, une nouvelle classe de Java 8, aide la gestion des pointeurs nuls.  On l'utilise dans les signatures des 
 méthodes ou une valeur inexistante peut être retournée.
