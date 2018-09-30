@@ -185,11 +185,9 @@ Avant, Java avait plusieurs interfaces très simples qui permettaient de faire d
 Malheureusement, leur utilisation était un peu trop verbose.
 ```java
 public class NonFunctionalRunnable {
-    
     public void executeFrom(Executor executor) {
 
         final int actionId = new Random().nextInt();
-
         Runnable r = new Runnable () {
             public void run() {
                 switch (actionId) {
@@ -200,21 +198,20 @@ public class NonFunctionalRunnable {
         executor.execute(r);
     }
 }
-
 ``` 
 
 ---
 # Et maintenant...
 
 Les expressions lambda sont un nouvel élément syntaxique de Java 8: les fonctions en tant qu'objets de première classe
-(les fonctions en tant qu'objets).  Cette idée ne s'applique qu'aux interfaces qui n'ont qu'une methode abstraite.  Dans
+(les fonctions en tant qu'objets).  Cette idée ne s'applique qu'aux interfaces qui n'ont qu'une méthode abstraite.  Dans
 sa plus simple expression, ça donne.
 ```java
 public class LambdaRunnable {
     
     public void executeFrom(Executor executor) {
 
-        final int actionId = new Random().nextInt();
+        int actionId = new Random().nextInt();
 
         Runnable r = () -> {
             switch (actionId) {
@@ -241,8 +238,7 @@ public class Ship {
     
     public void navigateWith(Navigator n) {
         
-        String result = n.navigate("east", "west", "north");
-        
+        String result = n.navigate("east", "west", "north");        
     }
 }
 
@@ -315,7 +311,52 @@ public class Ship {
     }
 }
 ```
+---
+# On a maintenant plein d'interfaces fonctionnelles pré-définies en java
 
+* `Predicate<T>`
+* `Supplier<T>`
+* `Consumer<T>`
+* `Function<T>`
+* `Callable<T>`
+
+Et leur variantes Bi....
+
+---
+
+# Une application rapide des idées:  Optional
+
+`Optional`, une nouvelle classe de Java 8, aide la gestion des pointeurs nuls.  On l'utilise dans les signatures des 
+méthodes ou une valeur inexistante peut être retournée.
+
+```java
+public Optional<String> getLanguage() { /* ... */}
+
+Optional<String> optLang = x.getLanguage();
+if ( optLang.isPresent() ) {}
+```
+
+C'est assez banal.
+
+---
+# Allons plus loin...
+```java
+public Optional<String> getLanguage() { /* ... */}
+
+String lang = x.getLanguage().orElse("FR"); // ou bien
+String lang = x.getLanguage().orElseGet(() -> fetchDefaultLanguage());
+
+```
+`Optional` pose la question au développeur-utilisateur: "Et si la variable n'était pas là ?", et ça
+laisse le développeur de librairie retourner des "nulls' avec `Optional.empty()` ou bien `Optional.ofNullable()`.
+---
+# Dernier exemple
+
+On veut copier les champs non-nulls d'un bean à un autre:
+```java
+bean.getMiddleName().ifPresent((nonnull) -> secondBean.setMiddleName(nonnull)); // ou bien
+bean.getMiddleName().ifPresent(secondBean::setMiddleName);
+```
 
 
 
