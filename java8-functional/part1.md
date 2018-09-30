@@ -249,6 +249,8 @@ class Sea {
 
             return directions[0];
         };
+        // ou bien, pour simplifier...
+        navigator = (directions) ->  directions[0];
         ship.navigateWith(navigator);
     }
 }
@@ -261,12 +263,7 @@ Supposons l'existance d'une méthode, on pourrait platement lui déléguer l'app
 ```java
 class Sea {
     public void doNavigation(Ship ship) {
-        Navigator navigator = (directions) ->  {
-
-            return iWouldLikeToPickADirection(directions);
-        };
-        // ou bien, pour simplifier...
-        navigator = (directions) ->  iWouldLikeToPickADirection(directions);
+        Navigator navigator = (directions) ->  iWouldLikeToPickADirection(directions);
         ship.navigateWith(navigator);
     }
 
@@ -286,7 +283,7 @@ public class Ship {
 }
 ```
 ---
-# Les réferences de méthode
+# Les références de méthode
 
 ```java
 class Sea {
