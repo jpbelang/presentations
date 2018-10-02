@@ -1,3 +1,127 @@
+# Dependency injection
+
+Dependency injection is the idea that the user of a class should push in dependencies, instead of having that class 
+either build it's own dependencies (through a `new` or other static method) or go fetch them through a mechanism (through some sort of `Retriever`).
+
+This allows you to bend the class to do your bidding within its interface by injecting mocks or such.
+Note here that there is absolutely no imperative to use a DI framework such as Spring or Guice.  Large applications can be built with handmade
+injection.
+---
+# How should I inject ?
+
+For class member injection:
+* It should be done at construction, in the constructor.
+* It should be done in a final field.
+* There should be no logic in the constructor.
+
+---
+# How should I inject ?
+
+If you find yourself trying to use logic in a constructor, extract that logic to s static factory method so that the constrstuctor itself
+has no logic.  This will allow a test to use the constructor in a flexible and intuitive way (principle of least astonishment).
+
+```java
+public class LogicInTheConstructor {
+
+    public interface Factory {
+        String createString(String someParameter);
+    }
+    
+
+    private boolean flag;
+    public LogicInTheConstructor(Factory fac, String param) {
+        
+        String point = fac.createString(param);
+        if ( "bad".equals(point) ) {
+            this.flag = false;
+        } else {
+            this.flag = true;
+        }
+    }
+}
+```
+
+---
+# How should I inject ?
+
+```java
+public class LogicGone {
+    public interface Factory {
+        String createString(String someParameter);
+    }
+
+    public static LogicGone create(LogicInTheConstructor.Factory fac, String param) {
+        String point = fac.createString(param);
+        if ( "bad".equals(point) ) {
+            return new LogicGone(false);
+        } else {
+            return new LogicGone(true);
+        }
+    } 
+
+    final private boolean flag;
+    public LogicGone (boolean flag) {
+
+        this.flag = flag;
+    }
+}
+```
+This means that someone who needs to inject `LogicGone` no longer needs the factory nor the parameter.
+
+# How should I inject ?
+
+Sometimes, injection is done through a correctly defined interface:  methods take parameters, and method parameters are perfectly well suited
+injection points.  Supposing the perfectly reasonable `Task` class
+:
+```java
+public class Task {
+
+    final private Executor serverExecutor;
+    final private Date jobStartTime;
+
+    public Task (Executor serverExecutor, Date jobStartTime) {
+        this.serverExecutor = serverExecutor;
+        this.jobStartTime = jobStartTime;
+    }
+
+    public void executeTask() {
+        
+        serverExecutor.execute(() -> {
+            if ( System.currentTimeMillis() - jobStartTime.getTime() < 10000) {
+                
+                // we are not too late, we run....
+            }
+        });
+    }
+    
+}
+```
+# How should I inject ?
+But maybe, you could be doing this:
+```java
+public class AnotherTask {
+
+    final private Executor serverExecutor;
+
+    public AnotherTask (Executor serverExecutor) {
+        this.serverExecutor = serverExecutor;
+    }
+
+    public void executeTask(Date jobStartTime) {
+        
+        serverExecutor.execute(() -> {
+            if ( System.currentTimeMillis() - jobStartTime.getTime() < 10000) {
+                
+                // we are not too late, we run....
+            }
+        });
+    }
+    
+}
+```
+If the executor is a singleton, then this task is a better fit:  you don't have to recreate `AnotherTask` for every execution.  
+It also becomes a singleton.
+
 # Spring misuse
 
 Dependency injection frameworks were developed to help developers inject dependencies.  Unfortunately for testing they often:
@@ -102,7 +226,7 @@ public class MyConfiguration {
     }
     
     // or
-    @Bean
+    @Bean @Singleton
     EvenGooderFields createFields(UsedClassOne one, UsedClassTwo two) {
         
         return new EvenGooderFields(one, two);
