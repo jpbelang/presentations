@@ -72,12 +72,48 @@ public class GoodFields {
    xsi:schemaLocation = "http://www.springframework.org/schema/beans
    http://www.springframework.org/schema/beans/spring-beans-3.0.xsd">
 
-   <bean id = "helloWorld" class = "ca.eloas.presentations.spring.GoodFields">
+   <bean id = "one" class = "ca.eloas.presentations.spring.UsedClassOne">
+      <property name = "message" value = "Hello World!"/>
+   </bean>
+   <bean id = "two" class = "ca.eloas.presentations.spring.UsedClassTwo">
       <property name = "message" value = "Hello World!"/>
    </bean>
 
+   <bean id = "helloWorld" class = "ca.eloas.presentations.spring.GoodFields">
+      <constructor-arg ref="one"/>
+      <constructor-arg ref="two"/>
+   </bean>
 </beans>
 ```
+
+This is hard to test: you need to load an application context (and at Intact, you may have to load a bunch of XML
+files to get your test to work).  Any change to the code (even refactoring) will not be reflected in the XML. Furthermore
+You don't "inject" anything by using this:  you get a prefabricated object.
+---
+# Eliminating XML
+```java
+@Configuration
+public class MyConfiguration {
+
+    @Bean
+    EvenGooderFields createFields() {
+        
+        return new EvenGooderFields(new UsedClassOne(), new UsedClassTwo());
+    }
+    
+    // or
+    @Bean
+    EvenGooderFields createFields(UsedClassOne one, UsedClassTwo two) {
+        
+        return new EvenGooderFields(one, two);
+    }
+}
+```
+This can be picked up by the _same_ mechanisms as XML files, with some added benifits:  
+* They survive refactoring.
+* They use programming:  no extra knowledge needed.
+* All of the Spring stuff in localized in one file.  Nothing to add in the bean files.
+* It's testable !
 
 
 
