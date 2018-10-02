@@ -17,9 +17,9 @@ Furthermore, the commonly used field injection is problematic.
 
 * Field injection forces us to use spring in testing.
 
-* Field injection is easy to misuse
+* Field injection is the easiest to misuse
 
-* It lets developers easily add dependencies to classes without consideration for good software development practices. 
+* The Spring developers recommend using constructor injection  Shouldn't we listen to them ? 
 ---
 # Fixing spring
 
