@@ -235,7 +235,7 @@ public class MyConfiguration {
     }
 }
 ```
-This can be picked up by the _same_ mechanisms as XML files, with some added benifits:  
+This can be picked up by the _same_ mechanisms as XML files, with some added benefits:  
 * They survive refactoring.
 * They use programming:  no extra knowledge needed.
 * All of the Spring stuff in localized in one file.  Nothing to add in the bean files.
