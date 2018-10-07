@@ -68,6 +68,7 @@ public class LogicGone {
 ```
 This means that someone who needs to inject `LogicGone` no longer needs the factory nor the parameter.
 
+---
 # How should I inject ?
 
 Sometimes, injection is done through a correctly defined interface:  methods take parameters, and method parameters are perfectly well suited
@@ -96,6 +97,7 @@ public class Task {
     
 }
 ```
+---
 # How should I inject ?
 But maybe, you could be doing this:
 ```java
@@ -121,7 +123,7 @@ public class AnotherTask {
 ```
 If the executor is a singleton, then this task is a better fit:  you don't have to recreate `AnotherTask` for every execution.  
 It also becomes a singleton.
-
+---
 # Spring misuse
 
 Dependency injection frameworks were developed to help developers inject dependencies.  Unfortunately for testing they often:
