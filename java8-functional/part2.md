@@ -120,6 +120,8 @@ Les opérations terminales sont des opérations qui terminent le stream (!).  El
 * `.min(Comparator)`, `.max(Comparator)`, `.count()`
 * `.anyMatch(Predicate)`, `.allMatch(Predicate)`, `.noneMatch(Predicate)`
 
+Toutes ces opérations sont en fait des helpers pour les opérations `.reduce()` de l'interface.
+
 ---
 # Ok, on va tout coller ça ensemble.
 
@@ -140,3 +142,8 @@ public class SimpleExamples {
     }
 }
 ```
+---
+# Les Collectors (les résultats organisés)
+
+---
+# Les 
