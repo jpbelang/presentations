@@ -187,11 +187,41 @@ public class SimpleObjectsEmbedded {
     }
 }
 ```
+---
 # Les Collectors (les résultats organisés)
 
 On peut collecter un stream dans plusieurs types de contenants.
 
+```java
+public class SimpleCollectors {
 
+    public static void main(String[] args) {
+        List<Person> people = Factories.createSimplePeople(Factories.createSimpleJobs());
 
+        List<Person> peopleWithJ = people.stream().filter(p -> p.getName().startsWith("J")).collect(Collectors.toList());
+        System.err.println(peopleWithJ);
+        // ou
+        List<Person> existingCollection = new ArrayList<>();
+        existingCollection.add(people.get(2));
+        List<Person> addToPeopleWithJ = people.stream().filter(p -> p.getName().startsWith("J")).collect(Collectors.toCollection(() -> existingCollection));
+        System.err.println(addToPeopleWithJ);
+
+        // Map
+        Map<String, Person> map = people.stream()
+                .filter(p -> p.getName().startsWith("J"))
+                .collect(Collectors.toMap(Person::getName, p -> p));
+        System.err.println(map);
+    }
+}
+```
 ---
-# Les 
+# Mapping de données (la transformation)
+
+Il est possible de transformer les données dans un stream.
+
+* `.map(Function<? super T, ? extends R> mapper)`:  cette méthode transforme un objet en un autre objet en passant par la fonction.
+* `.flatMap(Function<? super T, ? extends Stream<? extends R,T>> mapper)`:  cette méthode transforme une liste d'objets en relation avec les objets
+du stream en un autre stream d'objets en passant par la fonction.
+---
+# Map
+
