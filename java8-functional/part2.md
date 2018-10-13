@@ -143,7 +143,55 @@ public class SimpleExamples {
 }
 ```
 ---
+# Mais avec des objets, genre le DOM
+```java
+public class SimpleObjects {
+
+    public static void main(String[] args) {
+
+        List<Person> people = Factories.createSimplePeople(Factories.createSimpleJobs());
+        people.stream().filter(p -> p.getBirthDay().isBefore(LocalDate.ofYearDay(1970, 1))).forEach( p -> System.err.println(p.getName()));
+        // ou bien
+        people.stream().filter(p -> isBirthdayBefore(p, LocalDate.ofYearDay(1970, 1))).forEach( p -> System.err.println(p.getName()));
+        // ou mieux
+        people.stream().filter(isBirthdayBefore(LocalDate.ofYearDay(1970, 1))).forEach( p -> System.err.println(p.getName()));
+    }
+    
+    public static boolean isBirthdayBefore(Person p, LocalDate localDate) {
+        
+        return p.getBirthDay().isBefore(localDate);
+    }
+
+    public static Predicate<Person> isBirthdayBefore(LocalDate localDate) {
+
+        return (p) -> p.getBirthDay().isBefore(localDate);
+    }
+
+}
+```
+---
+# On peut "imbriquer" ces boucles...
+```java
+public class SimpleObjectsEmbedded {
+
+    public static void main(String[] args) {
+
+        List<Person> people = Factories.createSimplePeople(Factories.createSimpleJobs());
+        people.stream()
+                .filter(SimpleObjectsEmbedded::wasEverAmazonEmployee)
+                .forEach( p -> System.err.println(p.getName()));
+    }
+
+    private static boolean wasEverAmazonEmployee(Person p) {
+        return p.getJobs().stream().anyMatch(j -> j.getCompany().equals("Amazon"));
+    }
+}
+```
 # Les Collectors (les résultats organisés)
+
+On peut collecter un stream dans plusieurs types de contenants.
+
+
 
 ---
 # Les 
