@@ -52,6 +52,25 @@ Ces idées sont encadrées dans un modèle:
 * Techniquement infinies.
 * Paresseux (lazy). 
 * Séquentiel ou parallèle.
+---
+# C'est une très vieille idée
+
+À part pour les langages qui suivent un idiôme fonctionnel, cette idée a été ré-utilisée à plein d'endroits:
+
+* Le pipeline de la ligne de commande Unix utilise ces idées pour traiter du texte.
+* Le pipeline Powershell gère des objets windows de la même manière.
+
+Toutes ces idées tendent à favoriser de petites opérations le plus ré-utlisables possible.
+ 
+---
+# La métaphore
+
+La comparaison la plus simple pour un stream est une ligne de montage:
+
+* On fournit des resources primaires (Source).
+* On filtre les resources primaires pour garder ce qui est bon (Filter).
+* On transforme les resources primaires en un produit (Transform).
+* On emballe le produit (Reduce).
 
 ---
 # Les streams !
@@ -72,7 +91,16 @@ ou une opération terminale.
 Ces opération terminent effectivement le stream.
 
 ---
+# Mais qu'est-ce que donc un stream ?
 
+C'est une grande interface, de laquelle on peut tirer un itérateur (via `.iterator()`) qui implémente toutes les méthodes
+de la grande famille des streams.  Toutes ces operations filtrent, transforment, ou réduisent le contenu du stream. 
+
+Il est possible mais 
+## très peu désirable
+d'étendre cette interface.  Ce qui s'y trouve devrait être largement suffisant pour nos besoins. Sérieusement.
+
+---
 # On créé un stream...
 
 Il existe plusieurs sources pour les streams
@@ -83,16 +111,7 @@ Il existe plusieurs sources pour les streams
 - `Random.ints()`, de générateurs d'entiers aléatoires.
 - `Streams.zip()`, de Guava > 20
 ---
-# Mais qu'est-ce que donc un stream ?
 
-C'est une grande interface, de laquelle on peut tirer un itérateur (via `.iterator()`) qui implémente toutes les méthodes
-de la grande famille des streams.  Toutes ces operations filtrent, transforment, ou réduisent le contenu du stream. 
-
-Il est possible mais 
-## très peu désirable
-d'étendre cette interface.  Ce qui s'y trouve devrait être largement suffisant pour nos besoins. Sérieusement.
- 
----
 # Les opérations intermédiaires.
 
 Les opérations intermédiaires sont des opérations qui retournent un stream.  Les principales sont:
@@ -224,4 +243,63 @@ Il est possible de transformer les données dans un stream.
 du stream en un autre stream d'objets en passant par la fonction.
 ---
 # Map
+```java
+public class SimpleObjectsMapped {
 
+    public static void main(String[] args) {
+
+        List<Person> people = Factories.createSimplePeople(Factories.createSimpleJobs());
+        Set<String> names = people.stream().map(Person::getName).collect(Collectors.toSet());
+
+        Set<Job> possibleJobsForEveryone = people.stream().map(SimpleObjectsMapped::ideaJob).collect(Collectors.toSet());
+    }
+
+    public static Job ideaJob(Person p) {
+
+        return null;
+    }
+}
+```
+---
+# Flat Map
+```java
+public class SimpleObjectsFlatMapped {
+
+    public static void main(String[] args) {
+
+        List<Person> people = Factories.createSimplePeople(Factories.createSimpleJobs());
+        List<Job> jobs = people.stream().flatMap((p) -> p.getJobs().stream()).filter((j) -> j.getSalary() >= 40000).collect(Collectors.toList());
+
+        System.err.println(jobs);
+    }
+}
+```
+---
+# Petit detail sur l'état maintenu.
+
+L'état contenu dans un lambda est relatif à sa création, et non a son appel.
+```java
+public class StatefulSimpleObjectsFlatMapped {
+
+    public static void main(String[] args) {
+
+        List<Person> people = Factories.createSimplePeople(Factories.createSimpleJobs());
+        List<String> employers = people.stream()
+                .flatMap((p) -> p.getJobs().stream()).filter(findAllJobsByEmployers())
+                .map(Job::getCompany)
+                .collect(Collectors.toList());
+
+        System.err.println(employers);
+    }
+
+    private static Predicate<? super Job> findAllJobsByEmployers() {
+        Set<String> seenEmployers = new HashSet<>();
+        return (j) -> seenEmployers.add(j.getTitle());
+    }
+}
+```
+----
+# Les Exceptions
+
+Les streams ne supportent pas les exceptions déclarées.  Toutes les exceptions doivent être des exceptions *runtime*.  Le truc, si on est mal pris, 
+est de *wrapper* les exceptions et les relancer en tant qu'exceptions *runtime*.
