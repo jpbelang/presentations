@@ -234,6 +234,13 @@ public class SimpleCollectors {
 }
 ```
 ---
+# On peut definir nos propres Collectors
+
+`Collector.of(Supplier<R> supplier, BiConsumer<R,T> accumulator, BinaryOperator<R> combiner, Collector.Characteristics... characteristics)`
+
+Il fautdrait avoir une excellente raison pour creer notre propre Collector.
+
+---
 # Mapping de données (la transformation)
 
 Il est possible de transformer les données dans un stream.
@@ -305,7 +312,7 @@ Les streams ne supportent pas les exceptions déclarées.  Toutes les exceptions
 est de *wrapper* les exceptions et les relancer en tant qu'exceptions *runtime*.
 
 ---
-# les Exceptions
+# Les strategies pour les Exceptions
 ```java
 public class Exceptions {
 
@@ -339,3 +346,19 @@ public class Exceptions {
     }
 }
 ```
+---
+# Le multithreading
+
+Les streams peuvent rouler en paralelle ou bien en sequence
+
+`stream.parallel()` ou bien `stream.sequential()`
+
+La plupart des implementations retournent un stream sequentiel.  
+
+## Il serait cependant tres vilain de prendre ceci pour acquis!
+---
+# En terminant
+
+* Utilisez les!
+* Keep everything small!
+* Re-use!
